@@ -16,6 +16,7 @@ try:
     HOST = game_config["ip"]
     PORT = game_config["port"]
     ADDR = (HOST.strip(), int(PORT))
+    print(ADDR)
 except: 
     print("[ERROR] Failed to read values from game.config")
     exit()

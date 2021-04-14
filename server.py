@@ -12,7 +12,7 @@ PORT = 8080
 
 FORMAT = 'utf-8'
 
-W, H = 1600, 830
+WIDTH, HEIGHT = 1200, 700
 
 HOST_NAME = socket.gethostname()
 SERVER_IP = socket.gethostbyname(HOST_NAME)
