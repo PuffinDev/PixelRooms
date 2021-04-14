@@ -5,8 +5,21 @@ import pygame as pg
 import threading
 from time import sleep, time
 
-HOST = "192.168.1.194"
-PORT = 8080
+game_config = {}
+
+with open("game.config", "r") as f:
+    for line in f:
+        key, value = line.split("=")
+        game_config[key] = value
+
+try:
+    HOST = game_config["ip"]
+    PORT = game_config["port"]
+    ADDR = (HOST.strip(), int(PORT))
+except: 
+    print("[ERROR] Failed to read values from game.config")
+    exit()
+
 
 WIDTH = 1200
 HEIGHT = 700
@@ -52,6 +65,7 @@ def main(playername):
     global running
 
     server = Network()
+    server.setup(ADDR)
     id = server.connect(playername)
     vel = 4
 

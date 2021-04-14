@@ -5,7 +5,9 @@ import pickle
 class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.addr = ("192.168.1.194", 8080)
+
+    def setup(self, addr):
+        self.addr = addr
 
     def connect(self, playername):
         self.client.connect(self.addr)
