@@ -38,8 +38,8 @@ client_id = 0
 
 def get_start_location(players):
 
-	x = random.randrange(0,W)
-	y = random.randrange(0,H)
+	x = random.randrange(0,WIDTH)
+	y = random.randrange(0,HEIGHT)
 	return (x,y)
 
 
