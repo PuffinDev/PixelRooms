@@ -38,8 +38,8 @@ client_id = 0
 
 def get_start_location(players):
 
-	x = random.randrange(0,WIDTH)
-	y = random.randrange(0,HEIGHT)
+	x = random.randrange(0, WIDTH)
+	y = random.randrange(0, HEIGHT)
 	return (x,y)
 
 
@@ -49,8 +49,10 @@ def handle_client(conn, client_id):
 	current_id = client_id
 
 	# recieve a name from the client
-	data = conn.recv(16)
-	name = data.decode(FORMAT)
+	data = conn.recv(2048)
+	decoded_data = pickle.loads(data)
+	name = decoded_data[0]
+	skin = decoded_data[1]
 	print("[LOG]", name, "connected to the server.")
 
 	# Setup properties for each new player
@@ -61,7 +63,7 @@ def handle_client(conn, client_id):
 			break
 
 	x, y = get_start_location(players)
-	players[current_id] = {"x":x, "y":y,"color":color,"score":0,"name":name}  # x, y color, score, name
+	players[current_id] = {"x":x, "y":y,"color":color,"score":0,"name":name, "skin": skin}  # x, y color, score, name
 
 	conn.send(str.encode(str(current_id)))
 

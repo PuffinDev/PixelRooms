@@ -2,16 +2,30 @@ from network import Network
 import random
 import os
 import pygame as pg
+pg.font.init()
 import threading
 from time import sleep, time
 
-game_config = {}
 
+WIDTH = 1200
+HEIGHT = 700
+
+PLAYER_WIDTH = 60
+PLAYER_HEIGHT = 60
+
+NAME_FONT = pg.font.SysFont(None, 24)
+
+
+players = []
+running = True
+
+print("[LOADING] Loading game config...")
+#LOAD GAME CONFIG
+game_config = {}
 with open("game.config", "r") as f:
     for line in f:
         key, value = line.split("=")
         game_config[key] = value
-
 try:
     HOST = game_config["ip"]
     PORT = game_config["port"]
@@ -22,22 +36,17 @@ except:
     exit()
 
 
-WIDTH = 1200
-HEIGHT = 700
+# LOAD SKINS
+print("[LOADING] Loading skins...")
+skins = {}
+for filename in os.listdir("skins/"):
+    if filename.endswith(".png"):
+        path = os.path.join("skins/", filename)
+        name, extention = filename.split('.')
+        skins[name] = pg.image.load(path)
+        skins[name] = pg.transform.scale(skins[name], (40, 60))
 
-PLAYER_WIDTH = 60
-PLAYER_HEIGHT = 60
-
-pg.font.init()
-NAME_FONT = pg.font.SysFont(None, 24)
-
-win = pg.display.set_mode((WIDTH, HEIGHT))
-pg.display.set_caption("Pixel Rooms alpha")
-
-players = []
-
-running = True
-
+#FUNCTIONS
 
 def draw(players, clock, ping, debug=True):
 
@@ -45,9 +54,19 @@ def draw(players, clock, ping, debug=True):
 
     #Render players
     for player in players:
+        
+        #Load and blit skin
         p = players[player]
-        pg.draw.rect(win, p["color"], (p["x"], p["y"], PLAYER_WIDTH, PLAYER_HEIGHT))
+        if p["skin"] in skins.keys(): 
+            win.blit(skins[p["skin"]], (p["x"], p["y"]))
+        elif "default_skin" in skins.keys():
+            win.blit(skins["default_skin"], (p["x"], p["y"]))
+            #print("[SERVER] Could not find skin '" + p["skin"] + "'. Using default skin.")
+        else:
+            exit()
+            #print("[ERROR] Could not load 'skins/default_skin.png'")
 
+        #Render name
         img = NAME_FONT.render(p["name"], True, (0,0,0))
         win.blit(img, (p["x"], p["y"] - PLAYER_HEIGHT / 2))
 
@@ -61,13 +80,16 @@ def draw(players, clock, ping, debug=True):
     pg.display.update()
 
 
-def main(playername):
+def main(playername, skin):
     global players
     global running
 
+    print("[GAME] Connecting to server...")
     server = Network()
     server.setup(ADDR)
-    id = server.connect(playername)
+    id = server.connect(playername, skin)
+    print("[GAME] Connected!")
+
     vel = 4
 
     players = server.send("get")
@@ -104,4 +126,9 @@ def main(playername):
 
         draw(players, clocc, ping)
 
-main(input("Choose a name >> "))
+
+win = pg.display.set_mode((WIDTH, HEIGHT))
+pg.display.set_caption("Pixel Rooms alpha")
+
+
+main(input("Choose a name >> "), "blob")

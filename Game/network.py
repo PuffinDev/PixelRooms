@@ -9,9 +9,9 @@ class Network:
     def setup(self, addr):
         self.addr = addr
 
-    def connect(self, playername):
+    def connect(self, playername, skin):
         self.client.connect(self.addr)
-        self.client.send(str.encode(playername))
+        self.client.send(pickle.dumps((playername, skin)))
         result = self.client.recv(8)
         return int(result.decode())
 
