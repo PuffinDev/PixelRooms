@@ -7,15 +7,29 @@ import math
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-
-PORT = 8080
-
 FORMAT = 'utf-8'
-
 WIDTH, HEIGHT = 1200, 700
 
-HOST_NAME = socket.gethostname()
-SERVER_IP = socket.gethostbyname(HOST_NAME)
+
+# Load server config
+server_config = {}
+with open("server.config", "r") as f:
+    for line in f:
+        key, value = line.split("=")
+        server_config[key] = value.strip()
+
+print(server_config)
+try:
+	if server_config["ip"] == "local":
+		SERVER_IP = socket.gethostbyname(socket.gethostname())
+		PORT = 8080
+	else:
+		SERVER_IP = server_config["ip"]
+		PORT = int(server_config["port"])
+except: 
+    print("[ERROR] Failed to read values from server.config")
+    exit()
+
 
 # try to connect to server
 try:
