@@ -25,11 +25,12 @@ game_config = {}
 with open("game.config", "r") as f:
     for line in f:
         key, value = line.split("=")
+        value = value.strip()
         game_config[key] = value
 try:
     HOST = game_config["ip"]
     PORT = game_config["port"]
-    ADDR = (HOST.strip(), int(PORT))
+    ADDR = (HOST, int(PORT))
 except: 
     print("[ERROR] Failed to read values from game.config")
     exit()
