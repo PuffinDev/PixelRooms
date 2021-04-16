@@ -10,7 +10,7 @@ from time import sleep, time
 WIDTH = 1200
 HEIGHT = 700
 
-PLAYER_WIDTH = 60
+PLAYER_WIDTH = 45
 PLAYER_HEIGHT = 60
 
 NAME_FONT = pg.font.SysFont(None, 24)
@@ -30,7 +30,6 @@ try:
     HOST = game_config["ip"]
     PORT = game_config["port"]
     ADDR = (HOST.strip(), int(PORT))
-    print(ADDR)
 except: 
     print("[ERROR] Failed to read values from game.config")
     exit()
@@ -44,7 +43,7 @@ for filename in os.listdir("skins/"):
         path = os.path.join("skins/", filename)
         name, extention = filename.split('.')
         skins[name] = pg.image.load(path)
-        skins[name] = pg.transform.scale(skins[name], (45, 60))
+        skins[name] = pg.transform.scale(skins[name], (PLAYER_WIDTH, PLAYER_HEIGHT))
 
 #FUNCTIONS
 

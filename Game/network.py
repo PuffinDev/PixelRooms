@@ -1,4 +1,5 @@
 import socket
+socket.setdefaulttimeout(6)
 import pickle
 
 
@@ -10,7 +11,12 @@ class Network:
         self.addr = addr
 
     def connect(self, playername, skin):
-        self.client.connect(self.addr)
+        try:
+            self.client.connect(self.addr)
+        except:
+            print("[ERROR] Could not connect to server.")
+            exit()
+        
         self.client.send(pickle.dumps((playername, skin)))
         result = self.client.recv(8)
         return int(result.decode())
