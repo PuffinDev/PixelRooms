@@ -44,7 +44,7 @@ for filename in os.listdir("skins/"):
         path = os.path.join("skins/", filename)
         name, extention = filename.split('.')
         skins[name] = pg.image.load(path)
-        skins[name] = pg.transform.scale(skins[name], (40, 60))
+        skins[name] = pg.transform.scale(skins[name], (45, 60))
 
 #FUNCTIONS
 
@@ -90,7 +90,7 @@ def main(playername, skin):
     id = server.connect(playername, skin)
     print("[GAME] Connected!")
 
-    vel = 4
+    vel = 3
 
     players = server.send("get")
 
@@ -131,4 +131,4 @@ win = pg.display.set_mode((WIDTH, HEIGHT))
 pg.display.set_caption("Pixel Rooms alpha")
 
 
-main(input("Choose a name >> "), "blob")
+main(input("Choose a name >> "), game_config["skin"])
