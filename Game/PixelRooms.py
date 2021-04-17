@@ -16,8 +16,10 @@ PLAYER_HEIGHT = 60
 NAME_FONT = pg.font.SysFont(None, 24)
 
 
-players = []
+players = {}
+player_id = None
 running = True
+ping = 0
 
 print("[LOADING] Loading game config...")
 #LOAD GAME CONFIG
@@ -48,7 +50,8 @@ for filename in os.listdir("skins/"):
 
 #FUNCTIONS
 
-def draw(players, clock, ping, id, debug=True):
+def draw(players, clock, id, debug=True):
+    global ping
 
     win.fill((254, 255, 250))
 
@@ -80,27 +83,22 @@ def draw(players, clock, ping, id, debug=True):
     pg.display.update()
 
 
-def main(playername, skin):
-    global players
+def gameloop(players, player_id):
     global running
 
-    print("[GAME] Connecting to server...")
-    server = Network()
-    server.setup(ADDR)
-    id = server.connect(playername, skin)
-    print("[GAME] Connected!")
-
     vel = 3
-
-    players = server.send("get")
 
     clocc = pg.time.Clock()
 
     while running:
+        #try:
+        player = players[player_id]
+        #except:
+            #player = {"x": 0, "y": 0}
+            #print("using 0,0")
+
         clocc.tick(60)
-
-        player = players[id]
-
+        
         keys = pg.key.get_pressed()
 
         if keys[pg.K_a] or keys[pg.K_LEFT]:
@@ -119,25 +117,44 @@ def main(playername, skin):
             if player["y"] + PLAYER_HEIGHT < HEIGHT:
                 player["y"] = player["y"] + vel
 
-
-        #Send position data
-        data = "move " + str(player["x"]) + ' ' + str(player["y"])
-        start = round(time() * 1000) #convert to ms
-        players = server.send(data) #Time it to calculate ping
-        end = round(time() * 1000)
-        ping = (end - start)
-
-
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
                 pg.quit()
 
-        draw(players, clocc, ping, id)
+        draw(players, clocc, player_id)
+
+def main(playername, skin):
+    global ping
+    global players
+    global player_id
+
+    print("[GAME] Connecting to server...")
+    server = Network()
+    server.setup(ADDR)
+    player_id = server.connect(playername, skin)
+    print("[GAME] Connected!")
+
+    players = server.send("get")
+
+    clocc = pg.time.Clock()
+
+    while running:
+        clocc.tick(60)
+        player = players[player_id]
+        data = "move " + str(player["x"]) + ' ' + str(player["y"])
+        start = round(time() * 1000) #convert to ms
+        players = server.send(data) #Time it to calculate ping
+        print(players)
+        end = round(time() * 1000)
+        ping = (end - start)
 
 
 win = pg.display.set_mode((WIDTH, HEIGHT))
 pg.display.set_caption("Pixel Rooms alpha")
 
 
-main(input("Choose a name >> "), game_config["skin"])
+thread = threading.Thread(target=main, args=(input("Choose a name >> "), game_config["skin"]))
+thread.start()
+sleep(0.5)
+gameloop(players, player_id)
