@@ -48,7 +48,7 @@ for filename in os.listdir("skins/"):
 
 #FUNCTIONS
 
-def draw(players, clock, ping, debug=True):
+def draw(players, clock, ping, id, debug=True):
 
     win.fill((254, 255, 250))
 
@@ -103,14 +103,22 @@ def main(playername, skin):
 
         keys = pg.key.get_pressed()
 
-        if keys[pg.K_a]:
-            player["x"] = player["x"] - vel
-        if keys[pg.K_d]:
-            player["x"] = player["x"] + vel
-        if keys[pg.K_w]:
-            player["y"] = player["y"] - vel
-        if keys[pg.K_s]:
-            player["y"] = player["y"] + vel
+        if keys[pg.K_a] or keys[pg.K_LEFT]:
+            if player["x"] > 0:
+                player["x"] = player["x"] - vel
+        
+        if keys[pg.K_d] or keys[pg.K_RIGHT]:
+            if player["x"] + PLAYER_WIDTH < WIDTH:
+                player["x"] = player["x"] + vel
+        
+        if keys[pg.K_w] or keys[pg.K_UP]:
+            if player["y"] > 0:
+                player["y"] = player["y"] - vel
+        
+        if keys[pg.K_s] or keys[pg.K_DOWN]:
+            if player["y"] + PLAYER_HEIGHT < HEIGHT:
+                player["y"] = player["y"] + vel
+
 
         #Send position data
         data = "move " + str(player["x"]) + ' ' + str(player["y"])
@@ -119,12 +127,13 @@ def main(playername, skin):
         end = round(time() * 1000)
         ping = (end - start)
 
+
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
                 pg.quit()
 
-        draw(players, clocc, ping)
+        draw(players, clocc, ping, id)
 
 
 win = pg.display.set_mode((WIDTH, HEIGHT))
