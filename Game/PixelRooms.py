@@ -83,7 +83,8 @@ def draw(players, clock, id, debug=True):
     pg.display.update()
 
 
-def gameloop(players, player_id):
+def gameloop(player_id):
+    global players
     global running
 
     vel = 3
@@ -145,7 +146,6 @@ def main(playername, skin):
         data = "move " + str(player["x"]) + ' ' + str(player["y"])
         start = round(time() * 1000) #convert to ms
         players = server.send(data) #Time it to calculate ping
-        print(players)
         end = round(time() * 1000)
         ping = (end - start)
 
@@ -157,4 +157,4 @@ pg.display.set_caption("Pixel Rooms alpha")
 thread = threading.Thread(target=main, args=(input("Choose a name >> "), game_config["skin"]))
 thread.start()
 sleep(0.5)
-gameloop(players, player_id)
+gameloop(player_id)
